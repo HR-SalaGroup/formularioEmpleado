@@ -1,97 +1,577 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Sala Group - Formulario de Empleado</title>
-    <style>
-        :root {
-            --primary: #4CAF50;
-            --bg: #f4f7f6;
-        }
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            overflow: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-        }
-        #loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .loading-text {
-            margin-top: 20px;
-            color: #555;
-            font-weight: 500;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-        /* Mobile optimization */
-        @media (max-width: 600px) {
-            .loading-text { font-size: 14px; }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LA SALA GROUP - EMPLOYEE FORM</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f7f6;
+      padding: 15px;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #333;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 10px;
+      margin-top: 0;
+    }
+
+    .section-title {
+      background: #e2e8f0;
+      padding: 10px;
+      border-radius: 4px;
+      margin-top: 25px;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 13px;
+      color: #444;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+
+    canvas {
+      border: 2px dashed #aaa;
+      border-radius: 4px;
+      background: #fafafa;
+      cursor: crosshair;
+      touch-action: none;
+      width: 100%;
+      height: 180px;
+    }
+
+    .btn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    .btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .btn-clear {
+      background-color: #f44336;
+      margin-top: 5px;
+      padding: 8px;
+      width: auto;
+      font-size: 12px;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-blue {
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .disclaimer {
+      font-size: 12px;
+      font-weight: bold;
+      color: #d32f2f;
+      margin-top: 15px;
+      background-color: #fff3f3;
+      padding: 12px;
+      border-radius: 4px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .flex-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .flex-1 {
+      flex: 1;
+    }
+
+    .flex-2 {
+      flex: 2;
+    }
+
+    #loading-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.9);
+      z-index: 1000;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #4CAF50;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      .flex-row {
+        flex-direction: column;
+        gap: 0;
+      }
+    }
+  </style>
 </head>
+
 <body>
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+    <p id="loading-text" style="font-weight:bold; margin-top:15px;">Enviando formulario...</p>
+  </div>
 
-    <div id="loading">
-        <div class="spinner"></div>
-        <div class="loading-text">Cargando Formulario La Sala Group...</div>
-    </div>
+  <div class="container">
+    <h2>LA SALA GROUP<br><small style="font-size:15px; color:#666; font-weight:normal;">EMPLOYEE FORM</small></h2>
 
-    <!-- REEMPLAZAR EL 'src' CON TU URL DE APPS SCRIPT PUBLICADA -->
-    <iframe 
-        src="https://script.google.com/macros/s/AKfycbzuW0LOB0WdKnh8EC8ZgcfURfsFZfkqOmFKln6GvodSDgpvt606fWayTO2tT2pPMMhm/exec" 
-        onload="hideLoading()"
-        id="sheetIframe"
-        allow="camera; microphone; geolocation"
-    ></iframe>
+    <form id="employeeForm">
+      <div class="section-title">1. Datos Personales / Personal Data</div>
+      <div class="form-group">
+        <label>Trabajador / Employee *</label>
+        <input type="text" name="employeeName" required>
+      </div>
+      <div class="flex-row">
+        <div class="form-group flex-1">
+          <label>NIF/NIE/DNI *</label>
+          <input type="text" id="nif" name="nif" required placeholder="Ej: 12345678Z">
+        </div>
+        <div class="form-group flex-1">
+          <label>Caducidad / Expired Date *</label>
+          <input type="date" id="docExpInput" name="docExp" required>
+          <label
+            style="margin-top:6px; font-weight:normal; font-size:12px; display:flex; align-items:center; gap:6px; cursor:pointer;">
+            <input type="checkbox" id="noExpiry" style="width:auto;" onchange="toggleExpiry(this)">
+            <span>No tiene caducidad / No expiry date</span>
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>NSS Trabajador / S.S. Number</label>
+        <input type="text" name="ssNum">
+      </div>
+      <div class="flex-row">
+        <div class="form-group flex-1">
+          <label>F. Nacimiento / Birth Date *</label>
+          <input type="date" name="birthDate" required>
+        </div>
+        <div class="form-group flex-1">
+          <label>Sexo / Gender</label>
+          <select name="gender">
+            <option value="">Seleccionar / Select</option>
+            <option value="Male">Hombre / Male</option>
+            <option value="Female">Mujer / Female</option>
+            <option value="Other">Otro / Other</option>
+          </select>
+        </div>
+      </div>
 
-    <script>
-        function hideLoading() {
-            const loader = document.getElementById('loading');
-            loader.style.opacity = '0';
-            setTimeout(() => {
-                loader.style.display = 'none';
-            }, 500);
-        }
+      <div class="form-group">
+        <label>Nacionalidad / Nationality</label>
+        <input type="text" name="nationality" list="nationalityList" placeholder="Busca tu país... / Search country...">
+        <datalist id="nationalityList">
+          <option value="Española / Spanish">
+          <option value="Británica (UK) / British">
+          <option value="Irlandesa / Irish">
+          <option value="Francesa / French">
+          <option value="Alemana / German">
+          <option value="Italiana / Italian">
+          <option value="Argentina / Argentine">
+          <option value="Colombiana / Colombian">
+          <option value="Marroquí / Moroccan">
+          <option value="Albanesa / Albanian">
+          <option value="Argelina / Algerian">
+          <option value="Armenia / Armenian">
+          <option value="Austriaca / Austrian">
+          <option value="Bangladesí / Bangladeshi">
+          <option value="Belga / Belgian">
+          <option value="Boliviana / Bolivian">
+          <option value="Brasileña / Brazilian">
+          <option value="Búlgara / Bulgarian">
+          <option value="China / Chinese">
+          <option value="Costarricense / Costa Rican">
+          <option value="Croata / Croatian">
+          <option value="Cubana / Cuban">
+          <option value="Danesa / Danish">
+          <option value="Ecuatoriana / Ecuadorian">
+          <option value="Salvadoreña / Salvadoran">
+          <option value="Eslovaca / Slovak">
+          <option value="Eslovena / Slovenian">
+          <option value="Estonia / Estonian">
+          <option value="Etíope / Ethiopian">
+          <option value="Filipina / Philippine">
+          <option value="Finlandesa / Finnish">
+          <option value="Gambiana / Gambian">
+          <option value="Ghanesa / Ghanaian">
+          <option value="Griega / Greek">
+          <option value="Holandesa (Países Bajos) / Dutch">
+          <option value="Hondureña / Honduran">
+          <option value="Húngara / Hungarian">
+          <option value="India / Indian">
+          <option value="Iraní / Iranian">
+          <option value="Jordana / Jordanian">
+          <option value="Keniana / Kenyan">
+          <option value="Letona / Latvian">
+          <option value="Lituana / Lithuanian">
+          <option value="Mexicana / Mexican">
+          <option value="Nepalí / Nepalese">
+          <option value="Nicaragüense / Nicaraguan">
+          <option value="Nigeriana / Nigerian">
+          <option value="Paraguaya / Paraguayan">
+          <option value="Peruana / Peruvian">
+          <option value="Polaca / Polish">
+          <option value="Portuguesa / Portuguese">
+          <option value="Checa / Czech">
+          <option value="Rumana / Romanian">
+          <option value="Rusa / Russian">
+          <option value="Senegalesa / Senegalese">
+          <option value="Serbia / Serbian">
+          <option value="Siria / Syrian">
+          <option value="Sudafricana / South African">
+          <option value="Sueca / Swedish">
+          <option value="Tailandesa / Thai">
+          <option value="Ucraniana / Ukrainian">
+          <option value="Ugandesa / Ugandan">
+          <option value="Uruguaya / Uruguayan">
+          <option value="Estadounidense (USA) / American">
+          <option value="Venezolana / Venezuelan">
+          <option value="Yemení / Yemenite">
+        </datalist>
+      </div>
 
-        // Si la carga tarda demasiado (ej. 10seg), mostrar mensaje de ayuda
-        setTimeout(() => {
-            const loader = document.getElementById('loading');
-            if (loader.style.display !== 'none') {
-                const text = loader.querySelector('.loading-text');
-                text.innerHTML = 'Optimizando conexión...<br><small>Si el formulario no carga, <a href="https://script.google.com/macros/s/AKfycbzuW0LOB0WdKnh8EC8ZgcfURfsFZfkqOmFKln6GvodSDgpvt606fWayTO2tT2pPMMhm/exec" target="_blank">haz clic aquí</a></small>';
-            }
-        }, 10000);
-    </script>
+      <div class="section-title">2. Contacto / Contact</div>
+      <div class="form-group">
+        <label>Domicilio / Address *</label>
+        <input type="text" name="address" required>
+      </div>
+      <div class="flex-row">
+        <div class="form-group flex-2">
+          <label>Localidad / City *</label>
+          <input type="text" name="city" required>
+        </div>
+        <div class="form-group flex-1">
+          <label>C.P. / Postal Code</label>
+          <input type="text" name="postalCode">
+        </div>
+      </div>
+      <div class="flex-row">
+        <div class="form-group flex-1">
+          <label>Teléfono / Telephone *</label>
+          <div style="display:flex; gap:6px;">
+            <input type="text" id="telPrefix" value="+34" style="width:72px; flex:none; text-align:center;">
+            <input type="tel" id="telNumber" required placeholder="Número / Number" style="flex:1;">
+          </div>
+          <input type="hidden" id="telephoneFull" name="telephone">
+        </div>
+        <div class="form-group flex-1">
+          <label>E-mail *</label>
+          <input type="email" name="email" required>
+        </div>
+      </div>
+
+      <div class="section-title">3. Salud y Emergencias / Health & Emergencies</div>
+      <div class="form-group">
+        <label>Condición Médica / Medical Condition</label>
+        <textarea name="medical" rows="2"></textarea>
+      </div>
+      <div class="flex-row">
+        <div class="form-group flex-1">
+          <label>Contacto Emergencia *</label>
+          <input type="text" name="emgContact" required>
+        </div>
+        <div class="form-group flex-1">
+          <label>Tel. Emergencia *</label>
+          <div style="display:flex; gap:6px;">
+            <input type="text" id="emgPrefix" value="+34" style="width:72px; flex:none; text-align:center;">
+            <input type="tel" id="emgNumber" required placeholder="Número / Number" style="flex:1;">
+          </div>
+          <input type="hidden" id="emgPhoneFull" name="emgPhone">
+        </div>
+      </div>
+
+      <div class="section-title">4. Datos Adicionales / Additional Data</div>
+      <div class="form-group">
+        <label>IBAN / Bank Account *</label>
+        <input type="text" name="bank" required>
+      </div>
+
+      <div class="form-group">
+        <label>Idiomas y Nivel / Languages and level</label>
+        <div id="languagesContainer">
+          <div class="language-row flex-row" style="margin-bottom: 8px;">
+            <input type="text" class="lang-name flex-2" placeholder="Idioma / Language">
+            <select class="lang-level flex-1">
+              <option value="">Nivel / Level</option>
+              <option value="Básico / Basic">Básico</option>
+              <option value="Intermedio / Intermediate">Intermedio</option>
+              <option value="Avanzado / Advanced">Avanzado</option>
+              <option value="Nativo / Native">Nativo</option>
+            </select>
+            <button type="button" class="btn-remove" onclick="removeLanguage(this)"
+              style="display:none; background:#f44336; color:white; border:none; padding:10px; border-radius:4px;">X</button>
+          </div>
+        </div>
+        <button type="button" class="btn-blue" onclick="addLanguage()">+ Añadir idioma / Add language</button>
+        <input type="hidden" id="languages" name="languages">
+      </div>
+
+      <div class="section-title">5. Firma y Legal / Signature & Legal</div>
+
+      <label class="disclaimer">
+        <input type="checkbox" required style="width:auto;">
+        <span>ACEPTO LA POLÍTICA DE PRIVACIDAD (RGPD). / I ACCEPT THE PRIVACY POLICY.</span>
+      </label>
+
+      <label class="disclaimer">
+        <input type="checkbox" required style="width:auto;">
+        <span>COMUNICARÉ CUALQUIER CAMBIO EN MIS DATOS. / I WILL COMMUNICATE ANY DATA CHANGE.</span>
+      </label>
+
+      <div class="form-group" style="margin-top: 15px;">
+        <label>Firma / Signature *</label>
+        <canvas id="signatureCanvas"></canvas>
+        <button type="button" class="btn-clear" onclick="clearCanvas()">Borrar firma / Clear</button>
+      </div>
+      <input type="hidden" id="signatureBase64" name="signatureBase64">
+
+      <button type="button" class="btn" id="submitBtn" onclick="submitForm()">ENVIAR / SUBMIT</button>
+    </form>
+  </div>
+
+  <script>
+    // --- CONFIGURACIÓN ---
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzuW0LOB0WdKnh8EC8ZgcfURfsFZfkqOmFKln6GvodSDgpvt606fWayTO2tT2pPMMhm/exec';
+
+    function validarDNI_NIE(dni) {
+      dni = dni.toUpperCase().replace(/\s|-/g, '');
+      var expresion = /^[XYZ]?\d{5,8}[A-Z]$/i;
+      if (!expresion.test(dni)) return false;
+      var numero = dni.substr(0, dni.length - 1).replace('X', 0).replace('Y', 1).replace('Z', 2);
+      var letra = 'TRWAGMYFPDXBNJZSQVHLCKE'.substring(numero % 23, (numero % 23) + 1);
+      return letra === dni.substr(dni.length - 1, 1);
+    }
+
+    var canvas = document.getElementById('signatureCanvas');
+    var ctx = canvas.getContext('2d');
+    var drawing = false;
+
+    function resize() {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      ctx.lineWidth = 2;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#000";
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function getPos(e) {
+      var rect = canvas.getBoundingClientRect();
+      var clientX = e.clientX || (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+      var clientY = e.clientY || (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function start(e) {
+      drawing = true;
+      ctx.beginPath();
+      var p = getPos(e);
+      ctx.moveTo(p.x, p.y);
+    }
+
+    function draw(e) {
+      if (!drawing) return;
+      e.preventDefault();
+      var p = getPos(e);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+    }
+
+    function stop() {
+      drawing = false;
+    }
+
+    canvas.addEventListener('mousedown', start, {passive: false});
+    canvas.addEventListener('mousemove', draw, {passive: false});
+    canvas.addEventListener('mouseup', stop);
+    canvas.addEventListener('touchstart', start, { passive: false });
+    canvas.addEventListener('touchmove', draw, { passive: false });
+    canvas.addEventListener('touchend', stop);
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function toggleExpiry(cb) {
+      var input = document.getElementById('docExpInput');
+      if (cb.checked) {
+        input.removeAttribute('required');
+        input.value = '';
+        input.style.display = 'none';
+      } else {
+        input.setAttribute('required', 'required');
+        input.style.display = '';
+      }
+    }
+
+    function addLanguage() {
+      var container = document.getElementById('languagesContainer');
+      var firstRow = document.querySelector('.language-row');
+      var row = firstRow.cloneNode(true);
+      row.querySelector('input').value = '';
+      row.querySelector('select').value = '';
+      row.querySelector('.btn-remove').style.display = 'block';
+      container.appendChild(row);
+    }
+
+    function removeLanguage(btn) {
+      btn.closest('.language-row').remove();
+    }
+
+    async function submitForm() {
+      var form = document.getElementById('employeeForm');
+
+      if (emailField && emailField.value && emailField.validity.typeMismatch) {
+        alert("El formato del correo electrónico no es correcto.");
+        return;
+      }
+
+      if (!form.checkValidity()) {
+        alert("Por favor, rellena todos los campos obligatorios (*).");
+        return;
+      }
+
+      var nif = document.getElementById('nif').value;
+      if (!validarDNI_NIE(nif)) {
+        alert("El DNI/NIE introducido no es válido.");
+        return;
+      }
+
+      var blank = document.createElement('canvas');
+      blank.width = canvas.width;
+      blank.height = canvas.height;
+      if (canvas.toDataURL() === blank.toDataURL()) {
+        alert("La firma es obligatoria.");
+        return;
+      }
+
+      var btn = document.getElementById('submitBtn');
+      var loader = document.getElementById('loading-overlay');
+      btn.disabled = true;
+      loader.style.display = 'flex';
+
+      document.getElementById('signatureBase64').value = canvas.toDataURL("image/png");
+
+      var langs = [];
+      document.querySelectorAll('.language-row').forEach(r => {
+        var n = r.querySelector('.lang-name').value;
+        var l = r.querySelector('.lang-level').value;
+        if (n) langs.push(n + (l ? " (" + l + ")" : ""));
+      });
+      document.getElementById('languages').value = langs.join(', ');
+
+      var prefix = document.getElementById('telPrefix').value.trim();
+      var number = document.getElementById('telNumber').value.trim();
+      document.getElementById('telephoneFull').value = prefix + ' ' + number;
+
+      var emgPfx = document.getElementById('emgPrefix').value.trim();
+      var emgNum = document.getElementById('emgNumber').value.trim();
+      document.getElementById('emgPhoneFull').value = emgPfx + ' ' + emgNum;
+
+      if (document.getElementById('noExpiry').checked) {
+        document.getElementById('docExpInput').value = 'No caduca / No expiry';
+      }
+
+      var data = {};
+      new FormData(form).forEach((v, k) => data[k] = v);
+
+      try {
+        await fetch(API_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'procesarFormulario',
+            datos: data
+          })
+        });
+
+        alert("¡Muchas gracias, " + data.employeeName + "!\nFormulario enviado correctamente.");
+        location.reload();
+
+      } catch (error) {
+        console.error('Error:', error);
+        alert("Error al enviar. Inténtalo de nuevo.");
+      } finally {
+        btn.disabled = false;
+        loader.style.display = 'none';
+      }
+    }
+  </script>
 </body>
+
 </html>
